@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="inserting_def_roles" author="apuchinec">
+        <insert tableName="roles">
+            <column name="name">unregistered</column>
+            <column name="description">Unregistered user</column>
+        </insert>
+        <insert tableName="roles">
+            <column name="name">user</column>
+            <column name="description">Registered user</column>
+        </insert>
+        <insert tableName="roles">
+            <column name="name">seller</column>
+            <column name="description">Sell manager</column>
+        </insert>
+        <insert tableName="roles">
+            <column name="name">manager</column>
+            <column name="description">Height level manager </column>
+        </insert>
+        <insert tableName="roles">
+            <column name="name">buyer</column>
+            <column name="description">Purchasing agent</column>
+        </insert>
+        <insert tableName="roles">
+            <column name="name">admin</column>
+            <column name="description">System administrator</column>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>

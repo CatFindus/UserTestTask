@@ -1,0 +1,39 @@
+server:
+  port: 8080
+
+logging.level:
+  org.springframework.cloud.gateway: DEBUG
+  org.springframework.security: DEBUG
+  org.springframework.web.reactive.function.client: TRACE
+
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: ${KEYCLOAK_JWT:http://localhost:8081/realms/demo/protocol/openid-connect/certs}
+      client:
+        provider:
+          keycloak:
+            issuer-uri: ${KEYCLOAK_ISSUER:http://localhost:8081/realms/demo}
+        registration:
+          spring-with-test-scope:
+            provider: keycloak
+            client-id: spring-with-test-scope
+            client-secret: ${CLIENT_SECRET:o1KYkyoZCmCMskoHqf1dcZYu7193OPa1}
+            authorization-grant-type: authorization_code
+            scope: openid
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: 'true'
+          lower-case-service-id: 'true'
+      default-filters: TokenRelay=
+      routes:
+        - id: user-service
+          uri: ${USER_SERVICE:http://localhost:9001}
+          predicates:
+            - Path=/api/users/**
+          filters:
+            - RewritePath=/api/users/(?<segment>.*), /$\{segment}

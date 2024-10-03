@@ -1,0 +1,62 @@
+version: '3.9'
+
+services:
+
+  postgres-db:
+    container_name: postgres_db
+    image: postgres:16
+    restart: always
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=pg_db
+    ports:
+      - "9000:5432"
+    volumes:
+      - /home/anton/Downloads/docker/pg/user_service:/var/lib/postgresql/data
+
+  keycloak:
+    container_name: keycloak
+    ports:
+      - "8081:8080"
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+    image: quay.io/keycloak/keycloak:23.0.7
+    command: start-dev
+    restart: always
+
+  user-service:
+    build:
+      context: ./UserService
+      dockerfile: Dockerfile
+    ports:
+      - "9001:9001"
+    depends_on:
+      - postgres-db
+    restart: always
+    environment:
+      - DB_URL=jdbc:postgresql://postgres-db:5432/pg_db
+      - DB_USER=admin
+      - DB_PASS=admin
+
+  gateway-service:
+    build:
+      context: ./GatewayService
+      dockerfile: Dockerfile
+    ports:
+      - "80:8080"
+    depends_on:
+      - postgres-db
+      - keycloak
+    environment:
+      - CLIENT_SECRET=o1KYkyoZCmCMskoHqf1dcZYu7193OPa1
+      - KEYCLOAK_JWT=http://keycloak:8081/realms/demo/protocol/openid-connect/certs
+      - KEYCLOAK_ISSUER=http://keycloak:8081/realms/demo
+    restart: on-failure
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 3s
+        max_attempts: 5
+        window: 60s

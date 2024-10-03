@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="1" author="apuchinec">
+        <createTable tableName="users" schemaName="user_management">
+            <column autoIncrement="true" name="id" type="bigint">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="username" type="varchar(128)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="email" type="varchar(128)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="password_hash" type="varchar(128)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="firstname" type="varchar(64)"/>
+            <column name="lastname" type="varchar(64)"/>
+            <column name="phone" type="varchar(10)"/>
+            <column name="birth_date" type="date"/>
+            <column name="created_at" type="timestamp"/>
+            <column name="updated_at" type="timestamp"/>
+            <column name="last_login"  type="timestamp"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="2" author="apuchinec">
+        <createTable tableName="roles" schemaName="user_management">
+            <column autoIncrement="true" name="id" type="int">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(64)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+            <column name="description" type="text"/>
+            <column name="created_at" type="timestamp"/>
+            <column name="updated_at" type="timestamp"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="3" author="apuchinec">
+        <createTable tableName="user_roles" schemaName="user_management">
+            <column name="user_id" type="bigint">
+                <constraints foreignKeyName="fk_user_id" referencedTableName="users" referencedColumnNames="id" deleteCascade="true"/>
+            </column>
+            <column name="role_id" type="int">
+                <constraints foreignKeyName="fk_role_id" referencedTableName="roles" referencedColumnNames="id" deleteCascade="true"/>
+            </column>
+        </createTable>
+        <addPrimaryKey tableName="user_roles"
+                       columnNames="user_id, role_id"
+                       constraintName="pk_user_roles"
+                       schemaName="user_management"/>
+    </changeSet>
+</databaseChangeLog>
